@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GOOEY PRODUCTION — Movies Preview (Flip Cards)</title>
+  <style>
+    :root{--bg:#050505;--card:#111;--muted:#cfcfcf;--gold:#FFD700;--text:#fff}
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,Arial}
+
+    header{height:72px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:rgba(0,0,0,0.85);border-bottom:1px solid rgba(255,255,255,0.03)}
+    .logo{font-weight:800;color:var(--gold);letter-spacing:1px}
+    nav{display:flex;gap:18px}
+    nav a{color:var(--muted);text-decoration:none;font-weight:600}
+    nav a.active,nav a:hover{color:var(--gold)}
+
+    .container{padding:28px}
+    h1{color:var(--gold);margin-bottom:16px}
+    .filters{display:flex;gap:12px;align-items:center;margin-bottom:18px}
+    select{background:#0f0f0f;border:1px solid rgba(255,255,255,0.04);color:var(--muted);padding:8px;border-radius:6px}
+
+    /* grid */
+    .row{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px}
+
+    /* flip card */
+    .flip-card{perspective:1200px}
+    .flip-card-inner{position:relative;width:100%;height:100%;transition:transform .75s cubic-bezier(.2,.9,.3,1);transform-style:preserve-3d}
+    .flip-card:hover .flip-card-inner{transform:rotateY(180deg) translateZ(0)}
+
+    .flip-face{position:relative;backface-visibility:hidden;border-radius:10px;overflow:hidden;display:flex;flex-direction:column;height:100%;background:var(--card);box-shadow:0 8px 30px rgba(0,0,0,0.6)}
+    .front .poster{width:100%;height:300px;object-fit:cover}
+    .front .meta{padding:12px;color:var(--muted)}
+    .front .meta strong{display:block;color:var(--gold);margin-bottom:6px}
+
+    .back{transform:rotateY(180deg);align-items:center;justify-content:center;padding:18px;gap:10px}
+    .lead-img{width:120px;height:120px;border-radius:10px;object-fit:cover;border:3px solid rgba(255,215,0,0.15);box-shadow:0 6px 20px rgba(0,0,0,0.6)}
+    .lead-name{color:var(--gold);font-weight:700;margin-top:8px}
+    .tagline{color:var(--muted);font-size:14px;margin-top:6px;text-align:center}
+
+    .play-btn{margin-top:12px;padding:10px 14px;border-radius:8px;background:rgba(0,0,0,0.6);border:2px solid var(--gold);cursor:pointer;font-weight:700;color:var(--gold)}
+
+    /* subtle hover glow */
+    .flip-card:hover .flip-face{box-shadow:0 18px 40px rgba(255,215,0,0.06), inset 0 0 60px rgba(255,215,0,0.01)}
+
+    footer{padding:24px;text-align:center;color:var(--muted);border-top:1px solid rgba(255,255,255,0.03);margin-top:22px}
+
+    /* responsive */
+    @media (max-width:700px){.front .poster{height:200px}.lead-img{width:96px;height:96px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">GOOEY PRODUCTION</div>
+   <nav>
+      <a href="movies.html">MOVIES</a>
+      <a href="series.html">SERIES</a>
+      <a href="about us.html">ABOUT US</a>
+      <a href="events.html">EVENTS</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <h1>Movies — Preview</h1>
+    <p style="color:var(--muted);margin-bottom:18px">Hover any poster to flip the card and reveal the lead character with a tagline. Click <strong>Play</strong> to open the trailer on YouTube.</p>
+
+    <div class="row" id="movies-grid"></div>
+  </main>
+
+  <footer>© 2025 GOOEY PRODUCTION</footer>
+
+  <script>
+    // Sample demo videos (using public images). In production you'd replace these with your channel feed.
+    const demoVideos = [
+      {
+        title: 'Silent Screams', year: 2025, genre: 'Drama',
+        img: 'https://i9.ytimg.com/vi/spdZ4i1cMrU/mqdefault.jpg?v=693ae505&sqp=CNTfusoG&rs=AOn4CLAkQiAuHx399fYDzt2FVU5DKYQE0g',
+        videoUrl: 'https://youtu.be/spdZ4i1cMrU',
+        lead: 'Nyathira Njomo', leadImg: 'https://images.unsplash.com/photo-1603415526960-f7e0328c63b1?q=80&w=800&auto=format&fit=crop',
+        tagline: 'One man, one destiny.'
+      },
+      {
+        title: 'The Turner', year: 2023, genre: 'Drama',
+        img: 'https://i9.ytimg.com/vi_webp/faHvK0Dazyo/mq3.webp?sqp=CNTfusoG-oaymwEmCMACELQB8quKqQMa8AEB-AH-CYAC0AWKAgwIABABGHIgUyg4MA8=&rs=AOn4CLD-hrEj9YbFydtZVXt_PrDsqi0asQ',
+        videoUrl: 'https://youtu.be/9WCRQUhxmzs',
+        lead: 'Gooey Production', leadImg: 'https://images.unsplash.com/photo-1607746882042-944635dfe10e?q=80&w=800&auto=format&fit=crop',
+        tagline: 'Every city hides a story.'
+      },
+      {
+        title: 'Neon Runner', year: 2022, genre: 'Sci-Fi',
+        img: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=1400&auto=format&fit=crop',
+        videoUrl: 'https://www.youtube.com/watch?v=60ItHLz5WEA',
+        lead: 'Kai Nova', leadImg: 'https://images.unsplash.com/photo-1544006659-f0b21884ce1d?q=80&w=800&auto=format&fit=crop',
+        tagline: 'Fast city. Faster choices.'
+      },
+      {
+        title: 'Hidden Truths', year: 2023, genre: 'Mystery',
+        img: 'https://images.unsplash.com/photo-1520975911708-6e5d6b5b5e5d?q=80&w=1400&auto=format&fit=crop',
+        videoUrl: 'https://www.youtube.com/watch?v=7wtfhZwyrcc',
+        lead: 'Eva Cross', leadImg: 'https://images.unsplash.com/photo-1545996124-1db1d0f9e6b6?q=80&w=800&auto=format&fit=crop',
+        tagline: 'Secrets never stay buried.'
+      }
+    ];
+
+    function buildCard(item){
+      const wrapper = document.createElement('div');
+      wrapper.className = 'flip-card';
+
+      const inner = document.createElement('div');
+      inner.className = 'flip-card-inner';
+
+      // Front face
+      const front = document.createElement('div'); front.className = 'flip-face front';
+      const img = document.createElement('img'); img.className = 'poster'; img.src = item.img; img.alt = item.title;
+      const meta = document.createElement('div'); meta.className = 'meta';
+      meta.innerHTML = `<strong>${escapeHtml(item.title)}</strong><span style=\"color:var(--muted);font-size:13px\">${item.year} • ${item.genre}</span>`;
+      front.appendChild(img); front.appendChild(meta);
+
+      // Back face
+      const back = document.createElement('div'); back.className = 'flip-face back';
+      const leadImg = document.createElement('img'); leadImg.className = 'lead-img'; leadImg.src = item.leadImg; leadImg.alt = item.lead;
+      const name = document.createElement('div'); name.className = 'lead-name'; name.textContent = item.lead;
+      const tag = document.createElement('div'); tag.className = 'tagline'; tag.textContent = item.tagline;
+      const play = document.createElement('button'); play.className = 'play-btn'; play.textContent = 'Play Trailer';
+      play.onclick = (e)=>{ e.stopPropagation(); window.open(item.videoUrl, '_blank', 'noopener'); };
+      back.appendChild(leadImg); back.appendChild(name); back.appendChild(tag); back.appendChild(play);
+
+      inner.appendChild(front); inner.appendChild(back);
+      wrapper.appendChild(inner);
+      return wrapper;
+    }
+
+    function escapeHtml(s){return (s||'').toString().replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));}
+
+    const grid = document.getElementById('movies-grid');
+    demoVideos.forEach(v=>{
+      const card = buildCard(v);
+      grid.appendChild(card);
+    });
+  </script>
+</body>
+</html>
